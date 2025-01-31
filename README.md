@@ -1,11 +1,7 @@
-# Nextflow PostgreSQL cache
+# Nextflow Cache Browser
 
-Nextflow's PostgreSQL Cache Plugin enables the storage of task execution metadata in a PostgreSQL database, ensuring data persistence and scalability. This plugin is particularly useful for workflows that require robust, centralized caching mechanisms across distributed environments.
+Nextflow's Cache Browser is a plugin that allow you to navigate through the cache of your Nextflow pipeline executions.
 
-Add the plugin to your `nextflow.config` , configure it to connect with a postgre database and ... this is all.
-The plugin will create required tables and will store tasks context when you run your pipeline
-
-Among a way to *Centralized Cache Storage*, using this plugin, you're able to see log executions in real time
 
 ## License
 
@@ -17,5 +13,5 @@ Contributions are welcome! Please submit issues or pull requests to the project'
 
 ## Contact
 
-For commercial support, contact the EDN team at contacto@edn.es or refer to the plugin documentation at
-https://edn-es.github.io/ng-pgcache/index.html
+For commercial support, contact the Incremental Steps team at hello@incsteps.com or refer to the plugin documentation at
+https://incsteps.github.io/nf-cachebrowser/index.html
