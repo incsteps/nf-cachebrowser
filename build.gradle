@@ -1,0 +1,107 @@
+plugins {
+    id "idea"
+    id 'groovy'
+    id 'org.asciidoctor.jvm.convert'
+    id 'io.nextflow.nextflow-plugin'
+
+    id("io.micronaut.application") version "4.4.2"
+    id("io.micronaut.aot") version "4.4.2"
+}
+
+group project.findProperty('group')
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // see https://docs.gradle.org/4.1/userguide/dependency_management.html#sub:exclude_transitive_dependencies
+    runtimeClasspath.exclude group: 'org.slf4j', module: 'slf4j-api'
+}
+
+dependencies {
+    implementation("io.micronaut.groovy:micronaut-runtime-groovy"){
+        exclude group:'org.apache.groovy'
+    }
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    compileOnly("io.micronaut:micronaut-http-client")
+    compileOnly("io.micronaut:micronaut-http-validation")
+    compileOnly("io.micronaut.serde:micronaut-serde-processor")
+    runtimeOnly("ch.qos.logback:logback-classic")
+
+    implementation('org.apache.groovy:groovy-sql:4.0.24'){
+        exclude group:'org.apache.groovy'
+    }
+    implementation 'org.duckdb:duckdb_jdbc:1.2.0'
+}
+
+tasks.withType(GroovyCompile).configureEach {
+    groovyOptions.configurationScript = file("$rootDir/gradle/groovy-static-compiler.groovy")
+}
+
+asciidoctor{
+
+  resources {
+    from('src/docs/asciidoc/images') {
+      include '**/*.png'
+    }
+
+    into './images'
+  }
+}
+
+nextflowPlugin {
+    // minimum nextflow version
+    nextflowVersion = project.findProperty('nextflow_version')
+
+    provider = project.findProperty('provider')
+    className = project.findProperty('classname')
+    extensionPoints = [
+    ]
+
+    publishing {
+        github {
+            repository = project.findProperty('github_repository')
+            userName = project.findProperty('github_username')
+            authToken = project.findProperty('github_access_token')
+            email = project.findProperty('github_commit_email')
+
+            indexUrl = 'https://github.com/nextflow-io/plugins/main/plugins.json'
+        }
+    }
+}
+
+application {
+    mainClass = "com.incsteps.nextflow.cachebrowser.mn.WebServer"
+}
+
+micronaut {
+    runtime("netty")
+    testRuntime("spock2")
+    processing {
+        incremental(true)
+        annotations("com.incsteps.nextflow.cachebrowser.mn.*")
+    }
+    aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+    }
+}
+
+afterEvaluate {
+    tasks.named("buildLayers").get().dependsOn(tasks.named("extensionPoints").get())
+    tasks.named("generateGithubMeta").get().dependsOn(tasks.named("distZip").get())
+}
+
+run{
+    jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
+}

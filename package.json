@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@primevue/auto-import-resolver": "^4.3.3",
+    "unplugin-vue-components": "^28.5.0"
+  },
+  "dependencies": {
+    "primeicons": "^7.0.0"
+  }
+}

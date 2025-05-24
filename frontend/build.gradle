@@ -1,0 +1,23 @@
+plugins {
+    id "com.github.node-gradle.node" version "7.1.0"
+}
+
+node{
+    download = true
+    version = '20.5.0'
+}
+
+tasks.register('build', NpmTask){
+    group 'build'
+    args = ['run', 'build']
+}
+
+tasks.register('copyFrontend', Copy){
+    dependsOn 'build'
+    from 'dist'
+    into '../build/resources/main/frontend'
+}
+
+afterEvaluate {
+    project(":").tasks.named("processResources").get().dependsOn(tasks.named("copyFrontend").get())
+}
