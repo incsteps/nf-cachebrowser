@@ -11,3 +11,4 @@ build
 /validation/.nextflow.log.*
 /validation/*.db
 /validation/*.db.wal
+/node_modules/
