@@ -3,3 +3,77 @@ Jorge Aguilera <jorge@incsteps.com>
 :toc: left
 :imagesdir: images
 
+A Nextflow plugin that provides a web-based interface for visualizing and exploring Nextflow pipeline executions directly in your browser.
+
+== Overview
+
+nf-cachebrowser is a powerful Nextflow plugin that allows you to visualize pipeline executions through an intuitive web interface.
+Monitor your workflows, explore execution details, and analyze pipeline performance without leaving your browser.
+
+== Features
+
+- 🌐 **Web-based Interface** - Access pipeline execution data through a modern web UI
+- 📊 **Real-time Monitoring** - Track running pipelines in real-time (only in not blocking supported storages)
+- 🔍 **Detailed Execution View** - Explore individual process executions and their outputs
+- 📈 **Performance Analytics** - Analyze execution times, resource usage, and bottlenecks
+- 🗂️ **Cache Management** - Browse and manage Nextflow work directories and cached results
+- 🔄 **Resume Capabilities** - Visualize pipeline resume points and execution flow
+- 📱 **Responsive Design** - Works seamlessly on desktop and mobile devices
+
+== Screenshots
+
+First, run some pipeline with `--resume` flag
+
+[source]
+----
+nextflow run hello --resume
+----
+
+After some executions run the plugin:
+
+[source]
+----
+nextflow plugin nf-cachebrowser:run
+----
+
+The run command execute a web server at port 9999 so you can navigate to http://localhost:9999
+
+INFO:: By the moment, to close the web server you need to send a kill signal (or Ctrl+C)
+
+.executions list
+image::screenshot1.png[]
+
+.execution tasks list
+image::screenshot2.png[]
+
+.task detail
+image::screenshot3.png[]
+
+== Parameters
+
+- -p --port , the web server port, 9999 by default
+
+- --directory, the directory where .nextflow is located, current dir by default
+
+
+== Local Storage (default)
+
+nf-cachebrowser is able to visualize different "storages".
+
+Typical storage is "local", the default implementation of Nextflow, using an embedded database to store all
+executions details located in the `.nextflow/cache` folder
+
+WARNING:: Due the blocking nature of the library used by Nextflow, two process *can't* read/write at the same time
+the database, so use nf-cachebrowser once your pipelines are ended.
+
+== DuckDB Storage (experimental)
+
+Incremental Steps has been working in `nf-duckdbcache` plugin to reemplace the default implementation.
+
+DuckDB allows multiple process to access to the database so it expected you can execute pipelines and at the same
+time use nf-cachebrowser
+
+== Postgres Storage (TODO!!)
+
+In the same way as DuckDB database, we're working in a plugin to use Postgres as cache. nf-cachebrowser will allow
+inspect this storage
