@@ -27,7 +27,7 @@ jobs:
           distribution: ${{ env.JAVA_DISTRO }}
 
       - name: Build
-        run: ./gradlew test
+        run: ./gradlew frontend:installDev frontend:build test
 
       - name: Version
         id: vars

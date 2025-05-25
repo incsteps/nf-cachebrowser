@@ -7,6 +7,12 @@ node{
     version = '20.5.0'
 }
 
+tasks.register('installDev', NpmTask){
+    group 'build'
+    args = ['i','npm-run-all','--save-dev']
+}
+
+
 tasks.register('build', NpmTask){
     group 'build'
     args = ['run', 'build']
