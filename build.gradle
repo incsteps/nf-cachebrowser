@@ -64,10 +64,8 @@ nextflowPlugin {
         github {
             repository = project.findProperty('github_repository')
             userName = project.findProperty('github_username')
-            authToken = project.findProperty('github_access_token')
+            authToken = System.getenv('GITHUB_TOKEN')
             email = project.findProperty('github_commit_email')
-
-            indexUrl = 'https://github.com/nextflow-io/plugins/main/plugins.json'
         }
     }
 }

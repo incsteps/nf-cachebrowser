@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.vars.outputs.VERSION }}
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -43,6 +46,9 @@ jobs:
   release:
     needs: [ precheck ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -57,4 +63,6 @@ jobs:
           distribution: ${{ env.JAVA_DISTRO }}
 
       - name: Build
-        run: ./gradlew releasePlugin
+        run: ./gradlew build releasePlugin -x test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
