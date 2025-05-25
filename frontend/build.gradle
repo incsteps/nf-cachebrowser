@@ -15,6 +15,7 @@ tasks.register('installDev', NpmTask){
 
 tasks.register('build', NpmTask){
     group 'build'
+    dependsOn 'installDev'
     args = ['run', 'build']
 }
 
