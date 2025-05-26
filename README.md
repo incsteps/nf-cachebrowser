@@ -152,10 +152,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📖 [Documentation](https://github.com/your-org/nf-cachebrowser/wiki)
-- 🐛 [Issue Tracker](https://github.com/your-org/nf-cachebrowser/issues)
-- 💬 [Discussions](https://github.com/your-org/nf-cachebrowser/discussions)
-- 📧 [Email Support](mailto:support@your-org.com)
+- 📖 [Documentation](https://incsteps.github.io/nf-cachebrowser/)
+- 🐛 [Issue Tracker](https://github.com/incsteps/nf-cachebrowser/issues)
+- 💬 [Discussions](https://github.com/incsteps/nf-cachebrowser/discussions)
+- 📧 [Email Support](mailto:jorge@incsteps.com)
 
 ## Acknowledgments
 
