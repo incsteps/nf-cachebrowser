@@ -33,6 +33,7 @@ class WebServerConfig {
 
 
     String[] toMicronautProperties(){
+        adjustWorkDir()
         def map = [
                 "--micronaut.server.port" : "${port}".toString()
         ]
@@ -49,4 +50,9 @@ class WebServerConfig {
         map.entrySet().collect{ "$it.key=$it.value".toString()} as String[]
     }
 
+    private void adjustWorkDir(){
+        if( workdir?.length() == 0 && System.getenv("NXF_CACHE_DIR")){
+            workdir = System.getenv("NXF_CACHE_DIR")
+        }
+    }
 }
