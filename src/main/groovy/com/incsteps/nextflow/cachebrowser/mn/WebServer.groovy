@@ -50,7 +50,8 @@ class WebServer  {
 
     static void run(WebServerConfig config, ClassLoader classLoader) {
 
-        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY,"/home/jorge/nextflow/nf-cachebrowser/src/main/resources/logback.xml")
+
+
         def mn = Micronaut.build(config.toMicronautProperties())
                 .classLoader(classLoader)
                 .mainClass(WebServer)
