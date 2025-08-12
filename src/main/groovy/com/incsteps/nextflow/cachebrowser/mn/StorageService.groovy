@@ -8,4 +8,6 @@ interface StorageService {
     List<Execution> executions()
 
     List<TaskDetail> tasks(String session)
+
+    void renameWorkDir(String oldPath, String newPath, String task)
 }

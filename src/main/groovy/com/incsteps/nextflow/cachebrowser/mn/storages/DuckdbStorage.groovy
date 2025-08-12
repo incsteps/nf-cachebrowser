@@ -32,8 +32,7 @@ class DuckdbStorage extends AbstractStorage{
     }
 
     @Override
-    List<Execution> executions() {
-
+    protected List<Execution> executionsImpl() {
         historyList().each{ history->
 
             List<Map> index = loadIndex(history.session, history.name)
@@ -53,12 +52,12 @@ class DuckdbStorage extends AbstractStorage{
     }
 
     @Override
-    List<TaskDetail> tasks(String session) {
+    List<TaskDetail> tasksImpl(String session) {
         def tasks = loadTasks(session)
         return tasks
     }
 
-    void validateConnection(){
+    protected void validateConnection(){
         try{
             sql = Sql.newInstance(jdbc,'org.duckdb.DuckDBDriver')
         }catch(Exception e){
@@ -67,7 +66,7 @@ class DuckdbStorage extends AbstractStorage{
         }
     }
 
-    List<Map>loadIndex(String session, String name){
+    protected List<Map>loadIndex(String session, String name){
         validateConnection()
         def rows = sql.rows("select * from INDEX_FILE where session_id=:session_id and name=:name",[
                 session_id:session, name:name
@@ -78,7 +77,7 @@ class DuckdbStorage extends AbstractStorage{
         list
     }
 
-    List<TaskDetail>loadTasks(String session){
+    protected List<TaskDetail>loadTasks(String session){
         validateConnection()
         def rows = sql.rows("select * from CACHE_ENTRIES where session_id=:session_id",[
                 session_id:session
@@ -98,5 +97,10 @@ class DuckdbStorage extends AbstractStorage{
             tasks.add new TaskDetail(id: row.id as long, trace: trace, context: ctx, refCount: refCount)
         }
         return tasks.sort{ it.trace?.start}.reverse()
+    }
+
+    @Override
+    protected void saveTasks(String session, List<TaskDetail> tasks) {
+
     }
 }

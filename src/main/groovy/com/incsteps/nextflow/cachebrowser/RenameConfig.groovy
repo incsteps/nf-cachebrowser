@@ -1,17 +1,14 @@
-package com.incsteps.nextflow.cachebrowser.mn
+package com.incsteps.nextflow.cachebrowser
 import com.beust.jcommander.Parameter
 import com.beust.jcommander.Parameters
 import groovy.transform.CompileStatic
 
 @Parameters(optionPrefixes = "--")
 @CompileStatic
-class WebServerConfig {
+class RenameConfig {
 
     @Parameter(names = '--help', description='help', help=true)
     boolean help
-
-    @Parameter(names = '--port', description='web server port')
-    int port = 9999
 
     @Parameter(names = '--directory', description='nextflow directory')
     String workdir = ''
@@ -22,20 +19,17 @@ class WebServerConfig {
     @Parameter(names = '--postgres', description='a jdbc url to postgres')
     String postgresJdbc = ''
 
-    @Parameter(names = '--user', description='a jdbc user')
-    String jdbcuser = ''
+    @Parameter(names = '--task', description='replace in specified task')
+    String task
 
-    @Parameter(names = '--password', description='a jdbc password')
-    String jdbcpassword = ''
-
-    @Parameter(description = 'args')
+    @Parameter(description = 'new path to use', required = true)
     List<String> args
 
 
     String[] toMicronautProperties(){
         adjustWorkDir()
         def map = [
-                "--micronaut.server.port" : "${port}".toString()
+                "--micronaut.server.port" : "-1" // random port
         ]
         map.putAll([
                 "--storage": "local", // by default
