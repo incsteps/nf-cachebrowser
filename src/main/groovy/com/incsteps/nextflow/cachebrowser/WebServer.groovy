@@ -1,6 +1,6 @@
-package com.incsteps.nextflow.cachebrowser.mn
+package com.incsteps.nextflow.cachebrowser
 
-import ch.qos.logback.classic.util.ContextInitializer
+
 import com.beust.jcommander.JCommander
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -35,22 +35,24 @@ class WebServer  {
     static void run(List<String>args, ClassLoader classLoader) {
         WebServerConfig config = new WebServerConfig()
 
-        JCommander jc = new JCommander()
-        //jc.programName =" nf-cachebrowser"
-        jc.addObject(config)
-        jc.parse( args as String[])
+        try {
+            JCommander jc = new JCommander()
+            //jc.programName =" nf-cachebrowser"
+            jc.addObject(config)
+            jc.parse(args as String[])
 
-        if( config.help ){
-            jc.usage()
-            return
+            if (config.help) {
+                jc.usage()
+                return
+            }
+        }catch (e){
+            System.err.println(e)
         }
 
         run( config, classLoader )
     }
 
     static void run(WebServerConfig config, ClassLoader classLoader) {
-
-
 
         def mn = Micronaut.build(config.toMicronautProperties())
                 .classLoader(classLoader)

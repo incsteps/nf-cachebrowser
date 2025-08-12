@@ -44,6 +44,7 @@ INFO:: By the moment, to close the web server you need to send a kill signal (or
 image::screenshot1.png[]
 
 .execution tasks list
+
 image::screenshot2.png[]
 
 .task detail
@@ -77,3 +78,21 @@ time use nf-cachebrowser
 
 In the same way as DuckDB database, we're working in a plugin to use Postgres as cache. nf-cachebrowser will allow
 inspect this storage
+
+== Rename Workdir
+
+You can rewrite the storage changing the `workdir` to a new path using the `rename` command.
+
+This can be useful in case you want to move the storage to a new location, for example.
+
+The command:
+
+`nextflow plugin nf-cachebrowser:rename /current/path /new/path/to/use`
+
+will replace in all tasks with `workdir` as `/current/path` to `/new/path/to/use`
+
+Also, You can specify to apply the rename only to a task:
+
+`nextflow plugin nf-cachebrowser:rename --task helloWorld /current/path /new/path/to/use`
+
+

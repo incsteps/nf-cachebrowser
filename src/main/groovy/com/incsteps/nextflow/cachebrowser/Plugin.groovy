@@ -17,7 +17,6 @@
 package com.incsteps.nextflow.cachebrowser
 
 
-import com.incsteps.nextflow.cachebrowser.mn.WebServer
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import nextflow.cli.PluginAbstractExec
@@ -44,13 +43,14 @@ class Plugin extends BasePlugin implements PluginAbstractExec{
 
     @Override
     List<String> getCommands() {
-        return ['run']
+        return ['run', 'rename']
     }
 
     @Override
     int exec(String cmd, List<String> args) {
         return switch (cmd){
             case 'run'-> run(args)
+            case 'rename'-> rename(args)
             default -> -1
         }
     }
@@ -61,6 +61,16 @@ class Plugin extends BasePlugin implements PluginAbstractExec{
             0
         }catch(Throwable t){
             log.error("Error running web server",t)
+            -1
+        }
+    }
+
+    int rename(List<String> args){
+        try {
+            RenameWorkdirCmd.run(args,wrapper.pluginClassLoader)
+            0
+        }catch(Throwable t){
+            log.error("Error running rename workdir command",t)
             -1
         }
     }

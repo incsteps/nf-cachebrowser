@@ -5,6 +5,7 @@ import com.google.common.hash.HashCode
 import com.incsteps.nextflow.cachebrowser.mn.model.Execution
 import com.incsteps.nextflow.cachebrowser.mn.model.TaskDetail
 import groovy.transform.CompileDynamic
+import groovy.util.logging.Slf4j
 import io.micronaut.context.annotation.Requires
 import io.micronaut.context.annotation.Value
 import jakarta.inject.Singleton
@@ -17,6 +18,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory
 
 import java.nio.file.Paths
 
+@Slf4j
 @Requires(property = "storage", value = "local")
 @Singleton
 class LocalStorage extends AbstractStorage{
@@ -25,7 +27,8 @@ class LocalStorage extends AbstractStorage{
         super(nextflowDir)
     }
 
-    List<Execution>executions(){
+    @Override
+    protected List<Execution>executionsImpl(){
 
         def cacheDir = Paths.get(nextflowDir,".nextflow", "cache").toFile()
         if( !cacheDir.exists() && !cacheDir.isDirectory()) {
@@ -51,18 +54,17 @@ class LocalStorage extends AbstractStorage{
         ret
     }
 
+    @Override
     @CompileDynamic
-    List<TaskDetail> tasks(String session){
-        def dbDir = Paths.get(nextflowDir, ".nextflow", "cache", session, "db").toFile()
-        if( !dbDir.exists() && !dbDir.isFile()){
-            return null
-        }
+    List<TaskDetail> tasksImpl(String session){
         DB db
         try {
+            db = openDB(session)
+            if( !db ){
+                return []
+            }
 
             def kryo = KryoHelper.kryo()
-            db = Iq80DBFactory.@factory.open(dbDir, new Options().createIfMissing(false))
-
             def tasks = [] as List<TaskDetail>
             db.each { entry ->
 
@@ -89,7 +91,15 @@ class LocalStorage extends AbstractStorage{
         }
     }
 
-    List<CacheStore.Index>loadIndex(String session, String name){
+    protected DB openDB(String session){
+        def dbDir = Paths.get(nextflowDir, ".nextflow", "cache", session, "db").toFile()
+        if( !dbDir.exists() && !dbDir.isFile()){
+            return null
+        }
+        return Iq80DBFactory.@factory.open(dbDir, new Options().createIfMissing(false))
+    }
+
+    protected List<CacheStore.Index>loadIndex(String session, String name){
         def dbDir = Paths.get(nextflowDir, ".nextflow", "cache", session, "index.${name}").toFile()
         if( !dbDir.exists() && !dbDir.isFile()){
             return []
@@ -106,4 +116,36 @@ class LocalStorage extends AbstractStorage{
         return ret
     }
 
+    @Override
+    protected void saveTasks(String session, List<TaskDetail> tasks) {
+        DB db
+        try {
+            db = openDB(session)
+            if( !db ){
+                return
+            }
+            def kryo = KryoHelper.kryo()
+            db.each { entry ->
+                def hash = HashCode.fromBytes(entry.key)
+                def task = tasks.find{ it.id == hash.asLong()}
+                if( !task ){
+                    return
+                }
+                def payload = [
+                        KryoHelper.serialize(task.trace),
+                        KryoHelper.serialize(task.context),
+                        Integer.valueOf(task.refCount)
+                ]
+                db.put(entry.key, KryoHelper.serialize(payload))
+            }
+
+        }catch (Throwable e){
+            e.printStackTrace()
+            throw new IllegalArgumentException(e.message)
+        }finally {
+            if( db != null) {
+                db.close()
+            }
+        }
+    }
 }
